@@ -6,14 +6,13 @@
 // Copyright (c) 2014 NotTooBad Software. All rights reserved.
 //
 
-import SwiftShell
 import Foundation
+import SwiftShell
 import XCTest
 
 public class Stream_Tests: XCTestCase {
-
 	func testStreams() {
-		let (writer,reader) = streams()
+		let (writer, reader) = streams()
 
 		writer.write("one")
 		XCTAssertEqual(reader.readSome(), "one")
@@ -28,8 +27,8 @@ public class Stream_Tests: XCTestCase {
 	}
 
 	func testData() {
-		let (writer,reader) = streams()
-		let data = Data([2,4,9,7])
+		let (writer, reader) = streams()
+		let data = Data([2, 4, 9, 7])
 
 		writer.write(data: data)
 		XCTAssertEqual(reader.readSomeData(), data)
@@ -39,9 +38,8 @@ public class Stream_Tests: XCTestCase {
 		XCTAssertEqual(reader.readData(), data.base64EncodedData())
 	}
 
-#if !(os(iOS) || os(tvOS) || os(watchOS))
 	func testReadableStreamRun() {
-		let (writer,reader) = streams()
+		let (writer, reader) = streams()
 
 		writer.write("one")
 		writer.close()
@@ -50,28 +48,27 @@ public class Stream_Tests: XCTestCase {
 	}
 
 	func testReadableStreamRunAsync() {
-		let (writer,reader) = streams()
+		let (writer, reader) = streams()
 
 		writer.write("one")
 		writer.close()
 
 		XCTAssertEqual(reader.runAsync("cat").stdout.read(), "one")
 	}
-#endif
 
 	func testPrintStream() {
-		let (writer,reader) = streams()
+		let (writer, reader) = streams()
 		writer.write("one")
 		writer.close()
 
 		var string = ""
 		print(reader, to: &string)
-		
+
 		XCTAssertEqual(string, "one\n")
 	}
 
 	func testPrintToStream() {
-		let (w,reader) = streams()
+		let (w, reader) = streams()
 		// 'print' does not work with protocol types directly, not even 'TextOutputStream'.
 		var writer = w as! FileHandleStream
 
@@ -89,31 +86,28 @@ public class Stream_Tests: XCTestCase {
 		XCTAssertEqual(reader.readSome(), text)
 
 		text = ""
-		print("1",to: &text)
+		print("1", to: &text)
 		writer.print("1")
 		XCTAssertEqual(reader.readSome(), text)
 
 		text = ""
-		print("1",2,3.0, to: &text)
-		writer.print("1",2,3.0)
+		print("1", 2, 3.0, to: &text)
+		writer.print("1", 2, 3.0)
 		XCTAssertEqual(reader.readSome(), text)
 
 		text = ""
-		print("1",[2,3], separator:"", terminator:"", to: &text)
-		writer.print("1",[2,3], separator:"", terminator:"")
+		print("1", [2, 3], separator: "", terminator: "", to: &text)
+		writer.print("1", [2, 3], separator: "", terminator: "")
 		XCTAssertEqual(reader.readSome(), text)
 	}
 
-#if !(os(iOS) || os(tvOS) || os(watchOS))
 	func testWriteStreamToAnotherStreamCompiles() {
 		var file = try! open(forWriting: "/tmp/testWriteStreamToAnotherStreamCompiles.txt")
 		runAsync("echo", "arg1").stdout.runAsync("wc").stdout.write(to: &file)
 	}
-#endif
 
-#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
 	func testOnOutput() {
-		let (writer,reader) = streams()
+		let (writer, reader) = streams()
 
 		let expectoutput = expectation(description: "onOutput will be called when output is available")
 		reader.onOutput { stream in
@@ -126,7 +120,7 @@ public class Stream_Tests: XCTestCase {
 	}
 
 	func testOnStringOutput() {
-		let (writer,reader) = streams()
+		let (writer, reader) = streams()
 
 		let expectoutput = expectation(description: "onStringOutput will be called when output is available")
 		reader.onStringOutput { string in
@@ -136,22 +130,4 @@ public class Stream_Tests: XCTestCase {
 		writer.write("hi")
 		waitForExpectations(timeout: 0.5, handler: nil)
 	}
-#endif
 }
-
-#if !(os(macOS) || os(iOS) || os(tvOS) || os(watchOS))
-extension Stream_Tests {
-	public static var allTests = [
-		("testStreams", testStreams),
-		("testData", testData),
-		("testReadableStreamRun", testReadableStreamRun),
-		("testReadableStreamRunAsync", testReadableStreamRunAsync),
-		("testPrintStream", testPrintStream),
-		("testPrintToStream", testPrintToStream),
-		("testPrintWorksTheSameAsTheBuiltinOne", testPrintWorksTheSameAsTheBuiltinOne),
-		("testWriteStreamToAnotherStreamCompiles", testWriteStreamToAnotherStreamCompiles),
-		//("testOnOutput", testOnOutput),
-		//("testOnStringOutput", testOnStringOutput),
-		]
-}
-#endif

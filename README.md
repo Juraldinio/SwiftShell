@@ -2,13 +2,13 @@ Run shell commands | [Parse command line arguments](https://github.com/kareman/M
 
 ---
 
-Swift 5 | [Swift 4](https://github.com/kareman/SwiftShell/tree/Swift4) | [Swift 3](https://github.com/kareman/SwiftShell/tree/Swift3) | [Swift 2](https://github.com/kareman/SwiftShell/tree/Swift2)
+Swift 5.1 - 5.3 | [Swift 4](https://github.com/kareman/SwiftShell/tree/Swift4) | [Swift 3](https://github.com/kareman/SwiftShell/tree/Swift3) | [Swift 2](https://github.com/kareman/SwiftShell/tree/Swift2)
 
 <p align="center">
 	<img src="https://raw.githubusercontent.com/kareman/SwiftShell/master/Misc/logo.png" alt="SwiftShell logo" />
 </p>
 
-[![Build Status](https://travis-ci.org/kareman/SwiftShell.svg?branch=master)](https://travis-ci.org/kareman/SwiftShell) ![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Linux-lightgrey.svg) <a href="https://swift.org/package-manager"><img src="https://img.shields.io/badge/spm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" /></a> [![Carthage compatible](https://img.shields.io/badge/carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage) <a href="https://twitter.com/nottoobadsw"><img src="https://img.shields.io/badge/contact-@nottoobadsw-blue.svg?style=flat" alt="Twitter: @nottoobadsw" /></a>
+![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Linux++-lightgrey.svg) <a href="https://swift.org/package-manager"><img src="https://img.shields.io/badge/spm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" /></a> [![Carthage compatible](https://img.shields.io/badge/carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage) <a href="https://twitter.com/nottoobadsw"><img src="https://img.shields.io/badge/contact-@nottoobadsw-blue.svg?style=flat" alt="Twitter: @nottoobadsw" /></a>
 
 # SwiftShell
 
@@ -161,12 +161,6 @@ cleanctx.currentdirectory = main.tempdirectory
 The protocols ReadableStream and WritableStream in `Context` above can read and write text from/to commands, files or the application's own standard streams. They both have an `.encoding` property they use when encoding/decoding text.
 
 You can use `let (input,output) = streams()` to create a new pair of streams. What you write to `input` you can read from `output`.
-
-[FileSmith][]'s [WritableFile][] and [ReadableFile][] are streams too, and can be used as stdin, stdout and stderror in SwiftShell Contexts, including `main`.
-
-[FileSmith]: https://github.com/kareman/FileSmith 
-[WritableFile]: https://kareman.github.io/FileSmith/Classes/WritableFile.html
-[ReadableFile]: https://kareman.github.io/FileSmith/Classes/ReadableFile.html
 
 #### WritableStream
 
@@ -392,12 +386,12 @@ runAsync("cmd1", "arg1").stdout.runAsync("cmd2").stdout.write(to: &file)
 If the command provided to `runAsync` could not be launched for any reason the program will print the error to standard error and exit, as is usual in scripts. The `runAsync("cmd").finish()` method throws an error if the exit code of the command is anything but 0:
 
 ```swift
-let command = runAsync("cmd", "-n", 245)
+let someCommand = runAsync("cmd", "-n", 245)
 // ...
 do {
-	try command.finish()
-} catch CommandError.returnedErrorCode(let error) {
-	// use error.command or error.errorcode
+	try someCommand.finish()
+} catch let CommandError.returnedErrorCode(command, errorcode) {
+	print("Command '\(command)' finished with exit code \(errorcode).")
 }
 ```
 
@@ -445,7 +439,7 @@ Then run your Swift scripts with `marathon run <name>.swift`. Or add `#!/usr/bin
 
 ### [Swift Package Manager](https://github.com/apple/swift-package-manager)
 
-Add `.package(url: "https://github.com/kareman/SwiftShell", from: "5.0.1")` to your Package.swift:
+Add `.package(url: "https://github.com/kareman/SwiftShell", from: "5.1.0")` to your Package.swift:
 
 ```swift
 // swift-tools-version:5.0
@@ -458,7 +452,7 @@ let package = Package(
     platforms: [.macOS(.v10_13)],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(url: "https://github.com/kareman/SwiftShell", from: "5.0.1")
+        .package(url: "https://github.com/kareman/SwiftShell", from: "5.1.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -475,7 +469,7 @@ and run `swift build`.
 
 ### [Carthage](https://github.com/Carthage/Carthage)
 
-Add `github "kareman/SwiftShell" >= 5.0` to your Cartfile, then run `carthage update` and add the resulting framework to the "Embedded Binaries" section of the application. See [Carthage's README][carthage-installation] for further instructions.
+Add `github "kareman/SwiftShell" >= 5.1` to your Cartfile, then run `carthage update` and add the resulting framework to the "Embedded Binaries" section of the application. See [Carthage's README][carthage-installation] for further instructions.
 
 [carthage-installation]: https://github.com/Carthage/Carthage#adding-frameworks-to-an-application
 
@@ -484,7 +478,7 @@ Add `github "kareman/SwiftShell" >= 5.0` to your Cartfile, then run `carthage up
 Add `SwiftShell` to your `Podfile`.
 
 ```Ruby
-pod 'SwiftShell', '>= 5.0.0'
+pod 'SwiftShell', '>= 5.1.0'
 ```
 
 Then run `pod install` to install it.
